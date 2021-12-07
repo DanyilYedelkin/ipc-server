@@ -2,6 +2,14 @@
 #include <stdlib.h>     //for method "atoi"
 #include <fcntl.h>      //for open
 #include <signal.h>     //for signal
+#include <string.h> 
+#include <stdlib.h>
+#include <stdbool.h> 
+#include <sys/types.h> 
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
 
 __sighandler_t sendSignal(int pipeFilem, int file);    //can't use type void
 

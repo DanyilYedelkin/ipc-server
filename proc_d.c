@@ -2,15 +2,15 @@
 #include <errno.h>   // for errno
 #include <limits.h>  // for INT_MAX, INT_MIN
 #include <stdlib.h>  // for strtol
-#include<stdbool.h>  
-#include <signal.h>
-#include <netinet/in.h>
+#include<stdbool.h>  //bool function
+#include <signal.h>  //use signal
+#include <netinet/in.h> //AF_INET. 
 #include <string.h>
-#include <sys/sem.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
+#include <sys/sem.h> //sembuf
+#include <unistd.h>  //I/O primitives fork,pipe
+#include <sys/types.h> //pid_t
+#include <sys/ipc.h> // All use a common structure type, ipc_perm to pass information used in determining
+#include <sys/shm.h>  //schmat
 #include <arpa/inet.h> //inet_addr
 bool checkMemory(long memory, int errno);
 bool errorPrint(int errno, char *p, long memory); //check argv
@@ -18,6 +18,16 @@ void exit_signal();
 void semafor_write(int sockf, char *p, int semafor);
 void signalRemoveTake();
 //Конечно главный вопрос как передается ерно
+
+//Algorithm
+//take information from argv;
+//check memory, port, semafor;
+//creating socket
+//creating semafor
+//while
+//Semafor запрещает запись в общую память;
+//Сброс переменной даты;
+//write information in file descriptor
 int main(int argc, char *argv[])
 {
     long memory, port, semafor;

@@ -4,12 +4,12 @@
 #include <stdlib.h>  // for strtol
 #include<stdbool.h>  
 #include <signal.h>
+#include <netinet/in.h>
 
 bool checkMemory(long memory, int errno);
 bool errorPrint(int errno, char *p, long memory); //check argv
-//unsigned short sem_num;  /* semaphore number */
-//short          sem_op;   /* semaphore operation */
-//short          sem_flg;  /* operation flags */ 
+void exit_signal();
+
 int main(int argc, char *argv[])
 {
     long memory, port, semafor;
@@ -32,13 +32,59 @@ int main(int argc, char *argv[])
 
     signalRemoveTake();       
 
+    //unsigned short sem_num;  /* semaphore number */
+    //short          sem_op;   /* semaphore operation */
+    //short          sem_flg;  /* operation flags *
+    /* Поскольку сокет является только лишь абстракцией, то связка IP-адрес + номер порта - это уже имплементация в ОС. 
+    Верное название этой имплементации - "Интернет сокет". Абстракция используется для того, чтобы операционная система могла работать 
+    с любым типом канала передачи данных. Именно поэтому в ОС Linux Интернет сокет - 
+    это дескриптор, с которым система работает как с файлом. Типов сокетов, конечно же, намного больше. 
+    В ядре ОС Linux сокеты представлены тремя основными структурами:
     
+    В ядре ОС Linux сокеты представлены тремя основными структурами:
+    struct socket - представление сокета BSD, того вида сокета, который стал основой для современных "Интернет сокетов";
+    struct sock - собственная оболочка, которая в Linux называется "INET socket";
+    struct sk_buff - "хранилище" данных, которые передает или получает сокет;
+
+    socket - создание сокета;
+
+    bind - действие используется на стороне сервера. В стандартных терминах - это открытие порта на прослушивание, 
+    используя указанный интерфейс;
+
+    listen - используется для перевода сокета в прослушивающее состояние. Применяется к серверному сокету;
+    connect - используется для инициализации соединения;
+    accept - используется сервером, создает новое соединение для клиента;
+    send/recv - используется для работы с отправкой/приемом данных;
+    close - разрыв соединения, уничтожение сокета.
+
+    struct sockaddr_in 
+    {
+            short            sin_family;    e.g. AF_INET -- AF_INET is an address family that is used to designate the type of addresses. 
+            unsigned short   sin_port;      e.g. htons(3490) -- The htons() function converts the unsigned short integer 
+                                                 hostshort from host byte order to network byte order.
+            struct in_addr   sin_addr;      see struct in_addr, below
+            char             sin_zero[8];   zero this if you want to
+    };
+
+    int sockfd = socket(domain, type, protocol)*/  
+
+    int sockf;
+    if((sockf = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+    {
+        printf("Error Yehor Code, socket time");
+    }     
        
+}
+
+void exit_signal()
+{
+    printf("Turn off");
+    exit(EXIT_SUCCESS);
 }
 void signalRemoveTake()
 {
         kill(getppid(), SIGUSR1); //read more directly about that
-        signal(SIGUSR2, killMe); 
+        signal(SIGUSR2, exit_signal); 
 }
 bool errorPrint(int errno, char *p, long memory)
 {

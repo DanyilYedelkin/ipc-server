@@ -14,7 +14,7 @@
 void error(char *error);
 
 int main (int argc, char* argv[]){
-    int pipe = atoi(argv[1]), sm = atoi(argv[2]), semphr = atoi(argv[3]);
+    int pipe = atoi(argv[1]), sm = atoi(argv[2]), semphr = atoi(argv[3]); //советую поменять на strtol https://stackoverflow.com/questions/17710018/why-shouldnt-i-use-atoi
 
     // struct sembuf structSembuf[1] = NULL;
 

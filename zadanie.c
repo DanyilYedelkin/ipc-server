@@ -150,7 +150,8 @@ int main(int argc, char *argv[]){
             break;
     }
 
-    pause();
+    // pause();
+    signal (SIGUSR1, NULL);
 
     /////////////////////////////////////////////////////////////////////////
 
@@ -167,7 +168,7 @@ int main(int argc, char *argv[]){
             break;
     }
 
-    pause();
+    // pause();
 
 
 

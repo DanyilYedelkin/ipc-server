@@ -33,7 +33,7 @@ __sighandler_t sendSignal(int pipeFile, int file){
 	int readFile, writeFile;
 
 	while((readFile = read(file, buf, 1000)) > 0){
-		(writeFile = write(file, buf, readFile);
+		writeFile = write(file, buf, readFile);
 	}
 
 	close(file);

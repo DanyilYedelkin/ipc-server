@@ -33,10 +33,7 @@ __sighandler_t sendSignal(int pipeFile, int file){
 	int readFile, writeFile;
 
 	while((readFile = read(file, buf, 1000)) > 0){
-		if((writeFile = write(file, buf, readFile)) == -1){
-            perror("Error: Nepodarilo sa zapisat do pipe (P1)!");
-            exit(-2);
-        }
+		(writeFile = write(file, buf, readFile);
 	}
 
 	close(file);

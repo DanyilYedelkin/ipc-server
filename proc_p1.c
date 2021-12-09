@@ -2,19 +2,11 @@
 #include <stdlib.h>     //for method "atoi"
 #include <fcntl.h>      //for open
 #include <signal.h>     //for signal
-#include <string.h> 
-#include <stdlib.h>
-#include <stdbool.h> 
-#include <sys/types.h> 
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <unistd.h>
-
 
 __sighandler_t sendSignal(int pipeFilem, int file);    //can't use type void
 
 int main(int argc, char *argv[]){
-    /*int pipe = fork();        а я фиг знает, как провнерить id и pipe, для активации кода
+    /*int pipe = fork();        а я фиг знает, как проверить id и pipe, для активации кода
     printf("%d\n", pipe);*/
 
     int pipeFile = atoi(argv[1]);
@@ -44,10 +36,7 @@ __sighandler_t sendSignal(int pipeFile, int file){
 	int readFile, writeFile;
 
 	while((readFile = read(file, buf, 1000)) > 0){
-		if((writeFile = write(file, buf, readFile)) == -1){
-            perror("Error: Nepodarilo sa zapisat do pipe (P1)!");
-            exit(-2);
-        }
+		write(file, buf, readFile);
 	}
 
 	close(file);

@@ -71,7 +71,7 @@ int main(int argc, char* argv[]){
     if(bind(firstSocket, (struct sockaddr*) &client, sizeOfSocket) == -1){
         error("Error in bind\n");   //if it has an error, than it returns the error message
     }
-    //kill(getppid(),SIGUSR1);
+    kill(getppid(), SIGUSR1);
 
     char buffer[4096];  //create a buffer for read and write the file's content
 
@@ -80,6 +80,8 @@ int main(int argc, char* argv[]){
         write(file, buffer, element);
     }
 
+
+    kill(getppid(), SIGUSR2);
     //the exit of the program
     close(firstSocket);
     exit(EXIT_SUCCESS);

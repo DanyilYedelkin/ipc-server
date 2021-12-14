@@ -1,19 +1,17 @@
-#include <stdio.h>
+#include <stdio.h>  //for perror()
 #include <stdlib.h> //for atoi()
-#include <fcntl.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
+#include <fcntl.h>  //for open()
+#include <sys/socket.h> //for socket(), bind()
+#include <netinet/in.h> //for struct sockaddr_in
 #include <string.h>
-#include <unistd.h>
+#include <unistd.h> //for read(), write()
 #include <arpa/inet.h>
 #include <signal.h>
 #include <termios.h>
-#include <unistd.h>
-
 
 
 int getch(void);
-void error(char *errorMessage);
+void error(char *errorMessage); //a method for fprintf error mistake
 
 //the main function
 int main(int argc, char* argv[]){
@@ -71,7 +69,10 @@ int main(int argc, char* argv[]){
     if(bind(firstSocket, (struct sockaddr*) &client, sizeOfSocket) < 0){
         error("Error in bind\n");   //if it has an error, than it returns the error message
     }
-    // kill(getppid(), SIGUSR1);
+    //The kill() function sends a signal to a process or process group specified by pid (getppid()).
+    //The kill() function is successful if the process has permission to send the signal sig(SIGUSR1) to any of the processes specified by pid (getppid()). 
+    //If kill() is not successful, no signal is sent.
+    //kill(getppid(), SIGUSR1);
 
     char buffer[4096];  //create a buffer for read and write the file's content
 
@@ -80,8 +81,11 @@ int main(int argc, char* argv[]){
         write(file, buffer, element);
     }
 
-
+    //The kill() function sends a signal to a process or process group specified by pid (getppid()).
+    //The kill() function is successful if the process has permission to send the signal sig(SIGUSR2) to any of the processes specified by pid (getppid()). 
+    //If kill() is not successful, no signal is sent.
     //kill(getppid(), SIGUSR2);
+
     //the exit of the program
     close(firstSocket);
     exit(EXIT_SUCCESS);

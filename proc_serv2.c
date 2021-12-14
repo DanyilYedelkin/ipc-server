@@ -68,14 +68,14 @@ int main(int argc, char* argv[]){
     //assigns the address specified by &client to the socket referred to by the file descriptor firstSocket. 
     // sizeOfSocket specifies the size, in bytes, of the address structure pointed to by client
     socklen_t sizeOfSocket = sizeof(struct sockaddr);
-    if(bind(firstSocket, (struct sockaddr*) &client, sizeOfSocket) == -1){
+    if(bind(firstSocket, (struct sockaddr*) &client, sizeOfSocket) < 0){
         error("Error in bind\n");   //if it has an error, than it returns the error message
     }
-<<<<<<< HEAD
+/*<<<<<<< HEAD
     kill(getppid(),SIGUSR1);
 =======
     kill(getppid(), SIGUSR1);
->>>>>>> e2c8d44211714b52b411d0b3acd237150af3d4c1
+>>>>>>> e2c8d44211714b52b411d0b3acd237150af3d4c1*/
 
     char buffer[4096];  //create a buffer for read and write the file's content
 
@@ -85,7 +85,7 @@ int main(int argc, char* argv[]){
     }
 
 
-    kill(getppid(), SIGUSR2);
+    //kill(getppid(), SIGUSR2);
     //the exit of the program
     close(firstSocket);
     exit(EXIT_SUCCESS);

@@ -39,7 +39,7 @@ int main(int argc, char *argv[]){
         exit(0);
     }
 
-    signal(SIGUSR1, finished);
+    // signal(SIGUSR1, finished);
 
     int serv1, serv2, shmem1, shmem2;
 
@@ -185,7 +185,7 @@ int main(int argc, char *argv[]){
     switch (Server1) {
         case 0 :
             printf("Server 1 was forked\n");
-            execl("proc_serv1", "proc_serv1", server1_char, server2_char, (char*)NULL);
+            execl("proc_serv1", "proc_serv1", argv[1], argv[2], (char*)NULL);
             break;
         case -1 :
             perror("Couldn't fork server 1");
@@ -203,7 +203,7 @@ int main(int argc, char *argv[]){
     switch (Server2) {
         case 0 :
             printf("Server 2 was forked\n");
-            execl("proc_serv2", "proc_serv2", server2_char, (char*)NULL);
+            execl("proc_serv2", "proc_serv2", argv[2], (char*)NULL);
             break;
         case -1 :
             perror("Couldn't fork server 2");

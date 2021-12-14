@@ -17,21 +17,20 @@
 
 // int synch = 1;
 
-int Serv1, Serv2, D, P1, P2, Pr, T, S;
+int Server1, Server2, D, P1, P2, PR, T, S;
 
 void finished(){
+    sleep(5);
     kill(P1, SIGKILL);
     kill(P2, SIGKILL);
-    kill(Pr, SIGKILL);
+    kill(PR, SIGKILL);
     kill(T, SIGKILL);
     kill(S, SIGKILL);
     kill(D, SIGKILL);
-    kill(Serv1, SIGKILL);
-    kill(Serv2, SIGKILL);
+    kill(Server1, SIGKILL);
+    kill(Server2, SIGKILL);
     
 }
-
-
 
 
 int main(int argc, char *argv[]){
@@ -40,7 +39,9 @@ int main(int argc, char *argv[]){
         exit(0);
     }
 
-    int server1, server2, shmem1, shmem2;
+    signal(SIGUSR1, finished);
+
+    int serv1, serv2, shmem1, shmem2;
 
     int ppr1[2], ppr2[2];
 
@@ -55,6 +56,10 @@ int main(int argc, char *argv[]){
 
     char sharedmem1_char[10] ;
     char sharedmem2_char[10];
+
+    char P1_descriptor[10];
+    char P2_descriptor[10];
+
 
     char server1_char[10];
     char server2_char[10];
@@ -88,7 +93,7 @@ int main(int argc, char *argv[]){
     ///serv ports
 
 
-    server1 = (int)strtol(argv[1], &p, 10); // converting argv[1] to int
+    serv1 = (int)strtol(argv[1], &p, 10); // converting argv[1] to int
 
     
 
@@ -98,7 +103,7 @@ int main(int argc, char *argv[]){
 
     errno = 0;
 
-    server2 = (int)strtol(argv[2], &p, 10); // converting argv[1] to int
+    serv2 = (int)strtol(argv[2], &p, 10); // converting argv[1] to int
 
     
 
@@ -119,8 +124,8 @@ int main(int argc, char *argv[]){
     memset(semaphore2_char, '\0', sizeof (sem2));
     memset(sharedmem1_char, '\0', sizeof (shmem1));
     memset(sharedmem2_char, '\0', sizeof (shmem2));
-    memset(server1_char, '\0', sizeof (server1));
-    memset(server2_char, '\0', sizeof (server2));
+    memset(server1_char, '\0', sizeof (serv1));
+    memset(server2_char, '\0', sizeof (serv2));
 
     sprintf(pipe1_read_char, "%d", pipe1_read);
     sprintf(pipe2_read_char, "%d", pipe2_read);
@@ -130,8 +135,8 @@ int main(int argc, char *argv[]){
     sprintf(semaphore2_char, "%d", sem2);
     sprintf(sharedmem1_char, "%d", shmem1);
     sprintf(sharedmem2_char, "%d", shmem2);
-    sprintf(server1_char, "%d", server1);
-    sprintf(server2_char, "%d", server2);
+    sprintf(server1_char, "%d", serv1);
+    sprintf(server2_char, "%d", serv2);
 
 
 
@@ -175,9 +180,9 @@ int main(int argc, char *argv[]){
     /////////////////////////////////////////////////////////////////////////
 
     printf("\tInitializing Server 1\n");
-    Serv1 = fork();
+    Server1 = fork();
 
-    switch (Serv1) {
+    switch (Server1) {
         case 0 :
             printf("Server 1 was forked\n");
             execl("proc_serv1", "proc_serv1", server1_char, server2_char, (char*)NULL);
@@ -187,15 +192,15 @@ int main(int argc, char *argv[]){
             break;
     }
 
-    pause();//suspends the process until signal arrives
+    // pause();//suspends the process until signal arrives
 
 
     /////////////////////////////////////////////////////////////////////////
 
     printf("\tInitializing Server 2\n");
-    Serv2 = fork();
+    Server2 = fork();
 
-    switch (Serv2) {
+    switch (Server2) {
         case 0 :
             printf("Server 2 was forked\n");
             execl("proc_serv2", "proc_serv2", server2_char, (char*)NULL);
@@ -205,7 +210,7 @@ int main(int argc, char *argv[]){
             break;
     }
 
-    pause();//suspends the process until signal arrives
+    // pause();//suspends the process until signal arrives
 
     /////////////////////////////////////////////////////////////////////////
 
@@ -219,15 +224,65 @@ int main(int argc, char *argv[]){
             execl("proc_d", "proc_d", sharedmem2_char, semaphore2_char, server1_char, (char*) NULL);
             break;
         case -1 :
-            printf("Process D wasn't forked");
+            perror("Process D wasn't forked");
             break;
     }
 
-    pause();
+    // pause();
+
+    /////////////////////////////////////////////////////////////////////////
+
+    memset(P1_descriptor, '\0', sizeof(P1));
+    memset(P2_descriptor, '\0', sizeof(P2));
+
+    sprintf (P1_descriptor, "%d", P1);
+    sprintf (P2_descriptor, "%d", P2);
+
+    /////////////////////////////////////////////////////////////////////////
+
+    PR = fork();
+        switch (PR) {
+            case 0 :
+                printf("Process PR was forked\n");
+                execl("proc_pr", "proc_pr", P1_descriptor, P2_descriptor, pipe1_read_char, pipe2_write_char, NULL);
+                exit(EXIT_SUCCESS);
+                break;
+            case -1 :
+                perror("Process D wasn't forked\n");
+                exit(EXIT_FAILURE);
+        }
 
 
+    /////////////////////////////////////////////////////////////////////////
+
+    T = fork();
+        switch (T) {
+            case 0 :
+                printf("Process T was forked\n");
+                execl("proc_t", "proc_t", pipe2_read_char, sharedmem1_char, semaphore1_char, NULL);
+                exit(EXIT_SUCCESS);
+                break;
+            case -1 :
+                perror("Process T wasn't forked\n");
+                exit(EXIT_FAILURE);
+        }
 
 
-    finished();
+    /////////////////////////////////////////////////////////////////////////
+
+    S = fork();
+        switch (S) {
+            case 0 :
+                printf("Process S was forked\n");
+                execl("proc_s", "proc_s", sharedmem1_char, semaphore1_char, sharedmem2_char, semaphore2_char, NULL);
+                exit(EXIT_SUCCESS);
+                break;
+            case -1 :
+                perror("Process D wasn't forked\n");
+                exit(EXIT_FAILURE);
+        }
+
+
+    // finished();
     return 0;
 }

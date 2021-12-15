@@ -1,52 +1,59 @@
-#include <stdio.h>
-#include <stdlib.h>     //for method "atoi"
-#include <fcntl.h>      //for open
-#include <signal.h>     //for signal 
+#include <stdio.h> 
+#include <string.h> 
+#include <signal.h>
+#include <stdlib.h>
+#include <stdbool.h> 
+#include <sys/types.h> 
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <stdio.h> 
+#include <unistd.h>
+#include <signal.h>
+#include <fcntl.h>
 
-__sighandler_t sendSignal(int pipeFilem, int file);    //can't use type void
-
-int main(int argc, char *argv[]){
-
-    int pipeFile = atoi(argv[1]);   //converts the string argument argv[1] to an integer (pipeFile)
-    //if pipeFile is 0, than we will have a mistake (error message)
-    if(pipeFile == 0){  //checks, if converting has a mistake
-        perror("Error: incorrent input argv[1] !");     //return the mistake message
-        exit(EXIT_FAILURE);
-    }
-    int openFile;   //for creating a file
-    if((openFile = open("p2.txt", O_RDONLY)) == -1){  //opens the file and ckecks, if opening has a mistake
-        perror("Error: can't open the file p1.txt !");  //return the mistake message
-        exit(EXIT_FAILURE);
-    }
-
-    // signal() sets the disposition of the signal "SIGUSR1" to "sendSignal(pipeFile, openFile)"
-    // SIGUSR1	1	Intended for use by user applications
-    // If unsuccessful, signal() returns a value of SIG_ERR and a positive value in errno
-    if(signal(SIGUSR1, sendSignal(pipeFile, openFile)) != SIG_ERR){
-        printf("p2.txt is successful!\n");  //if signal() != SIG_ERR
-    } else{
-        perror("Error with signal!");   //if signal() == SIG_ERR, so it returns the mistake message
-        exit(EXIT_FAILURE);
-    }
-
-    //The kill() function sends a signal to a process or process group specified by pid (getppid()).
-    //The kill() function is successful if the process has permission to send the signal sig(SIGUSR1) to any of the processes specified by pid (getppid()). 
-    //If kill() is not successful, no signal is sent.
-    kill(getppid(), SIGUSR1);
-
-    return 0;
+void killPipe()
+{
+    printf("proc_p2 Turn OFF");
 }
+int main(int argc, char *argv[])
+{
 
-__sighandler_t sendSignal(int pipeFile, int file){
-    //create a buffer for read and write file's elements
-    char buffer[1000];
-	int readFile, writeFile;
+  if(argc < 3)
+    {
+    printf("Usage %s <ppid> <pipe[0]>\n" ,argv[0]);
+    exit(1);
+  }
 
-	while((readFile = read(file, buffer, 1000)) > 0){   //if opening the file is successful
-		write(file, buffer, readFile);
-	}
+  int fd = open("p2.txt", O_RDONLY);
+  if(fd < 0)
+    {
+    perror("Problem with open file");
+    exit(1);
+  }
+    int input = atoi(argv[1]);  
+    int output = atoi(argv[2]);
+    
+    kill(getppid(), SIGUSR1);
+ 
+    char buffer[200];
 
-    //close the file
-	close(file);
-	return SIG_IGN;
+    ssize_t readLine = getline(buffer, 200, fd);
+    ssize_t writeLine = write(output, 200, strlen(buffer));
+    if(readLine == -1 || writeLine == -1) 
+    {
+        printf("With read||write Pipe_p2 problem \n");
+        exit(1);
+    }
+    else
+    {
+        printf("P2: SUCCESSFUL\n");
+    }
+    signal(SIGUSR1, (void*)0);
+    close(fd);
+    signal(SIGUSR2, killPipe);
+    while(1)
+    {
+        sleep(1);
+    }
+    return 0;
 }

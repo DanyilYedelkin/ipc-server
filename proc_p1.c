@@ -36,7 +36,7 @@ int main(int argc, char *argv[]){
 
 	signal(SIGUSR2, (void*)0);
 
-	printf("P1 зrocess is turning off...\n";)
+	printf("P1 зrocess is turning off...\n");
 
 	while (1){
 		sleep(10);

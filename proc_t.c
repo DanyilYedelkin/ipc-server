@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <sys/socket.h>
 #include <sys/shm.h>
-#include <netinet/in.h>
+#include <netinet/in.h> 
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>

@@ -149,9 +149,11 @@ int main(int argc, char *argv[]){
         case 0 :
             printf("P1 was started successfully\n");
             execl("proc_p1", "proc_p1", pipe1_write_char, (char*)NULL);
+            exit(0);
             break;
         case -1 :
             printf("P1 wasn't started\n");
+            exit(1);
             break;
     }
 
@@ -167,9 +169,11 @@ int main(int argc, char *argv[]){
         case 0 :
             printf("P2 was started successfully\n");
             execl("proc_p2", "proc_p2", pipe1_write_char, (char*)NULL);
+            exit (0);
             break;
         case -1 :
             printf("P2 wasn't started\n");
+            exit(1);
             break;
     }
 
@@ -186,9 +190,11 @@ int main(int argc, char *argv[]){
         case 0 :
             printf("Server 1 was forked\n");
             execl("proc_serv1", "proc_serv1", argv[1], argv[2], (char*)NULL);
+            exit(0);
             break;
         case -1 :
             perror("Couldn't fork server 1");
+            exit(1);
             break;
     }
 
@@ -204,9 +210,11 @@ int main(int argc, char *argv[]){
         case 0 :
             printf("Server 2 was forked\n");
             execl("proc_serv2", "proc_serv2", argv[2], (char*)NULL);
+            exit(0);
             break;
         case -1 :
             perror("Couldn't fork server 2");
+            exit(1);
             break;
     }
 
@@ -222,9 +230,11 @@ int main(int argc, char *argv[]){
         case 0 :
             printf("Process D was forked\n");
             execl("proc_d", "proc_d", sharedmem2_char, semaphore2_char, server1_char, (char*) NULL);
+            exit(0);
             break;
         case -1 :
             perror("Process D wasn't forked");
+            exit(0);
             break;
     }
 

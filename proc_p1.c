@@ -2,7 +2,7 @@
 #include <stdlib.h>     //for method "atoi"
 #include <fcntl.h>      //for open
 #include <signal.h>     //for signal
-
+ 
 __sighandler_t sendSignal(int pipeFilem, int file);    //can't use type void
 
 int main(int argc, char *argv[]){

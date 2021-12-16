@@ -57,7 +57,6 @@ int main(int argc, char* argv[]){
     };
     */
 
-    //AF_INET (AF - Address Family) -  communication domain, refers to addresses from the internet, IP addresses specifically
     client.sin_family = AF_INET; //IPv4 protocol
     // inet_aton("127.0.0.1", &client.sin_addr.s_addr); or we can write like this:
     //function shall convert the string pointed to by cp, in the standard IPv4 dotted decimal notation, to an integer value suitable for use as an Internet address
@@ -78,12 +77,8 @@ int main(int argc, char* argv[]){
     char buffer[200];  //create a buffer for read and write the file's content
 
     int element, input;
-    // while((element = read(firstSocket, buffer, 200)) > 0){
-    //     write(file, buffer, element);
-    // }
 
 	for (int i = 0; i < 10; i++){
-        //recv() receives a message from a connected socket (firstSocket). ssize_t recv(int socket, void *buffer, size_t length, int flags);
 		recv(firstSocket, buffer, 200, 0);
 		write(file, buffer, strlen(buffer));
 		write(file, "\n", 1);
@@ -96,27 +91,14 @@ int main(int argc, char* argv[]){
 
     //the exit of the program
     // close(firstSocket);
-    exit(EXIT_SUCCESS);     //return 0
+    exit(EXIT_SUCCESS);
 
-    return 0;   //probably, we can don't use it
+    return 0;
 }
 
 // a method for an error message and exit with failure 
 void error(char *errorMessage){
     fprintf(stderr,"[./proc_serv2] %s", errorMessage);
 
-    exit(EXIT_FAILURE); //return 1
-}
-
-//create this method for having a mistake with declaration method in the code (old version of the code)
-int getch(void){
-    struct termios oldattr, newattr;
-    int ch;
-    tcgetattr( STDIN_FILENO, &oldattr );
-    newattr = oldattr;
-    newattr.c_lflag &= ~( ICANON | ECHO );
-    tcsetattr( STDIN_FILENO, TCSANOW, &newattr );
-    ch = getchar();
-    tcsetattr( STDIN_FILENO, TCSANOW, &oldattr );
-    return ch;
+    exit(EXIT_FAILURE);
 }

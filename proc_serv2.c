@@ -35,7 +35,7 @@ int main(int argc, char* argv[]){
     }
 
     //open the file "serv2.txt", with flags and 0777 mod
-    int file = open("serv2.txt", O_CREAT | O_WRONLY | O_TRUNC | O_APPEND, 0777);
+    int file = open("serv2.txt", O_CREAT | O_WRONLY | O_TRUNC, 0777);
     if(file == -1){ //if we can't open the file, than it returns error message
         error("Error in opening the file\n"); 
     }
@@ -60,34 +60,40 @@ int main(int argc, char* argv[]){
     client.sin_family = AF_INET; //IPv4 protocol
     // inet_aton("127.0.0.1", &client.sin_addr.s_addr); or we can write like this:
     //function shall convert the string pointed to by cp, in the standard IPv4 dotted decimal notation, to an integer value suitable for use as an Internet address
-    client.sin_addr.s_addr = inet_addr("127.0.0.1"); 
+    client.sin_addr.s_addr = INADDR_ANY; 
     client.sin_port = htons(firstPort); //translates a short integer from host byte order to network byte order
 
     //assigns the address specified by &client to the socket referred to by the file descriptor firstSocket. 
     // sizeOfSocket specifies the size, in bytes, of the address structure pointed to by client
-    socklen_t sizeOfSocket = sizeof(struct sockaddr);
+    socklen_t sizeOfSocket = sizeof(client);
     if(bind(firstSocket, (struct sockaddr*) &client, sizeOfSocket) < 0){
         error("Error in bind\n");   //if it has an error, than it returns the error message
     }
     //The kill() function sends a signal to a process or process group specified by pid (getppid()).
     //The kill() function is successful if the process has permission to send the signal sig(SIGUSR1) to any of the processes specified by pid (getppid()). 
     //If kill() is not successful, no signal is sent.
-    //kill(getppid(), SIGUSR1);
+    kill(getppid(), SIGUSR1);
 
-    char buffer[4096];  //create a buffer for read and write the file's content
+    char buffer[200];  //create a buffer for read and write the file's content
 
     int element, input;
-    while((element = read(firstSocket, buffer, 4096)) > 0){
-        write(file, buffer, element);
-    }
+    // while((element = read(firstSocket, buffer, 4096)) > 0){
+    //     write(file, buffer, element);
+    // }
+
+	for (int i = 0; i < 10; i++){
+		recv(firstSocket, buffer, 200, 0);
+		write(file, buffer, strlen(buffer));
+		write(file, "\n", 1);
+	}
 
     //The kill() function sends a signal to a process or process group specified by pid (getppid()).
     //The kill() function is successful if the process has permission to send the signal sig(SIGUSR2) to any of the processes specified by pid (getppid()). 
     //If kill() is not successful, no signal is sent.
-    //kill(getppid(), SIGUSR2);
+    kill(getppid(), SIGUSR2);
 
     //the exit of the program
-    close(firstSocket);
+    // close(firstSocket);
     exit(EXIT_SUCCESS);
 
     return 0;

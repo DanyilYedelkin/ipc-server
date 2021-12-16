@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 	printf("END proc_p1\n");
 	while (1)
 	{
-		sleep(1);
+        pause();
 	}
 	if (fd != NULL)
 		fclose(fd);

@@ -25,9 +25,9 @@ void writePipe()
     printf("With read||write pipe proc_p2\n");
     exit(1);
   }
-  printf("P2: SUCCESSFUL \n");
+  // printf("P2: SUCCESSFUL \n");
   free(buffer);
-  printf("\n");
+  // printf("\n");
 }
 void killPipe()
 {

@@ -23,6 +23,13 @@ void p8synch();
 void last();
 
 
+union semun 
+{
+	int val;
+	struct semid_ds *buf;
+	unsigned short *array;
+}semafor_struct;
+
 
 
 int Server1, Server2, D, P1, P2, PR, T, S;
@@ -80,23 +87,48 @@ int main(int argc, char * argv[]) {
     int pipe2_read = dup(ppr2[0]);
     int pipe2_write = dup(ppr2[1]);
 
-    int sem1 = semget(IPC_PRIVATE, 2, 0666 | IPC_CREAT);
-    int sem2 = semget(IPC_PRIVATE, 2, 0666 | IPC_CREAT);
+    int sem1 = semget(4001, 2, 0666 | IPC_CREAT);
+    int sem2 = semget(4010, 2, 0666 | IPC_CREAT);
 
-    if (sem1 == -1)
+    if (sem1 == -1) {
         printf("Couldn't create sem1\n");
-    if (sem2 == -1)
+        fprintf(stderr, "semget failed\n");
+		exit(EXIT_FAILURE);
+    }
+    if (sem2 == -1){
         printf("Couldn't create sem2\n");
+        fprintf(stderr, "semget failed\n");
+		exit(EXIT_FAILURE);
+    }
 
     semctl(sem1, 0, SETVAL, 0);
     semctl(sem2, 0, SETVAL, 0);
     semctl(sem1, 1, SETVAL, 0);
     semctl(sem2, 1, SETVAL, 0);
 
+	semafor_struct.val = 1;
+	semctl (sem1, 0, SETVAL, semafor_struct);
+	semafor_struct.val = 0;
+	semctl (sem1, 1, SETVAL, semafor_struct);
+
+	semafor_struct.val = 1;
+	semctl(sem2, 0, SETVAL, semafor_struct);
+	semafor_struct.val = 0;
+	semctl(sem2, 1, SETVAL, semafor_struct);
+
     //shared memory
 
-    shmem1 = shmget(IPC_PRIVATE, 256, 0666 | IPC_CREAT);
-    shmem2 = shmget(IPC_PRIVATE, 256, 0666 | IPC_CREAT);
+    if ((shmem1 = shmget(2005, 200*sizeof(char), 0666 | IPC_CREAT)) == -1){
+        printf("Couldn't create shared memory 1\n");
+		fprintf(stderr, "shmget failed\n");
+		exit(EXIT_FAILURE);
+    }
+    if ((shmem2 = shmget(2007, 200*sizeof(char), 0666 | IPC_CREAT)) == -1){
+        printf("Couldn't create shared memory 2\n");
+		fprintf(stderr, "shmget failed\n");
+		exit(EXIT_FAILURE);
+    }
+    
 
     memset(pipe1_read_char, '\0', sizeof(pipe1_read));
     memset(pipe2_read_char, '\0', sizeof(pipe2_read));
@@ -186,8 +218,8 @@ int main(int argc, char * argv[]) {
 
     int state;
 	waitpid(PR, &state, WUNTRACED);
-	kill(PR,SIGUSR2);
-	kill(PR,SIGUSR2);
+	kill(P1,SIGUSR2);
+	kill(P2,SIGUSR2);
 
 
     /////////////////////////////////////////////////////////////////////////
@@ -298,8 +330,9 @@ int main(int argc, char * argv[]) {
         sleep(3);
     }
 
-    while (ended != 1){
+    while (ended == 0 && progress == 8){
         printf("Almost done...\n");
+        sleep(3);
     }
 
     finished();
@@ -319,49 +352,49 @@ void last(){
 
 void p1synch() {
     if (progress == 0) {
-        printf("Process p1 was started\n");
+        printf("Process p1 was done\n");
         progress = 1;
     }
 }
 
 void p2synch() {
     if (progress == 1) {
-        printf("Process p2 was started.\n");
+        printf("Process p2 was done\n");
         progress = 3;
     }
 }
 
 void p4synch() {
     if (progress == 3) {
-        printf("Process serv2 was started.\n");
+        printf("Process serv2 was done\n");
         progress = 4;
     }
 }
 
 void p5synch() {
      if (progress == 4) {
-        printf("Process serv1 was started.\n");
+        printf("Process serv1 was done\n");
         progress = 5;
     }
 }
 
 void p6synch() {
     if (progress == 5) {
-        printf("Process T was started.\n");
+        printf("Process T was done\n");
         progress = 6;
     }
 }
 
 void p7synch() {
     if (progress == 6) {
-        printf("Process D was started.\n");
+        printf("Process D was done\n");
         progress = 7;
     }
 }
 
 void p8synch() {
     if (progress == 7) {
-        printf("Process S was started\n");
+        printf("Process S was done\n");
         progress = 8;
     }
 }

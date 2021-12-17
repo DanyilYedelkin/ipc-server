@@ -17,7 +17,7 @@ void error(char *errorMessage); //a method for fprintf error mistake
 int main(int argc, char* argv[]){
     //checks if input arguments are less, or more than 2 => returns the error message
     if(argc != 2){ 
-        error("Error: Incorrect number of input arguments\n"); 
+        error("Error: Incorrect number of input arguments\n"); //error message
     }
 
     int firstPort = atoi(argv[1]);  //converts the string argument argv[1] to an integer (firstPort)
